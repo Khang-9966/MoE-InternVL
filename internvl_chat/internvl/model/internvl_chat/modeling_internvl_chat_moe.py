@@ -22,7 +22,7 @@ from transformers.modeling_utils import PreTrainedModel
 from transformers.utils import ModelOutput, logging
 from transformers.models.qwen2_moe.modeling_qwen2_moe import load_balancing_loss_func
 
-from .configuration_internvl_chat import InternVLChatConfig
+from .configuration_internvl_chat_moe import InternVLChatConfig
 from .modeling_intern_vit import InternVisionModel
 
 logger = logging.get_logger(__name__)

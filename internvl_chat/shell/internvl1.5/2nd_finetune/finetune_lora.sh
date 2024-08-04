@@ -1,7 +1,7 @@
 set -x
 
-GPUS=2
-BATCH_SIZE=16
+GPUS=1
+BATCH_SIZE=32
 PER_DEVICE_BATCH_SIZE=1
 GRADIENT_ACC=$((BATCH_SIZE / PER_DEVICE_BATCH_SIZE / GPUS))
 
@@ -11,7 +11,7 @@ export MASTER_PORT=34229
 export TF_CPP_MIN_LOG_LEVEL=3
 export LAUNCHER=pytorch
 
-OUTPUT_DIR='train_output/test_moe_internvl_2e'
+OUTPUT_DIR='train_output/test_5k_ocr_test'
 
 if [ ! -d "$OUTPUT_DIR" ]; then
   mkdir -p "$OUTPUT_DIR"
@@ -22,14 +22,14 @@ fi
 # gradient accumulation steps: 2
 # total batch size: 16
 # epoch: 1
-CUDA_VISIBLE_DEVICES=5,6 torchrun \
+CUDA_VISIBLE_DEVICES=6 torchrun \
   --nnodes=1 \
   --node_rank=0 \
   --master_addr=127.0.0.1 \
   --nproc_per_node=${GPUS} \
   --master_port=${MASTER_PORT} \
-  internvl/train/internvl_chat_finetune_moe.py \
-  --model_name_or_path "Moe_intern_1b_v2_2e" \
+  internvl/train/internvl_chat_finetune.py \
+  --model_name_or_path "OpenGVLab/InternVL2-1B" \
   --conv_style "Hermes-2" \
   --output_dir ${OUTPUT_DIR} \
   --meta_path "./shell/data/doc_vqa.json" \
@@ -41,7 +41,7 @@ CUDA_VISIBLE_DEVICES=5,6 torchrun \
   --freeze_llm True \
   --freeze_mlp False \
   --freeze_backbone False \
-  --use_llm_lora 8 \
+  --use_llm_lora 16 \
   --vision_select_layer -1 \
   --dataloader_num_workers 4 \
   --bf16 True \
@@ -50,7 +50,7 @@ CUDA_VISIBLE_DEVICES=5,6 torchrun \
   --gradient_accumulation_steps ${GRADIENT_ACC} \
   --evaluation_strategy "no" \
   --save_strategy "steps" \
-  --save_steps 20 \
+  --save_steps 10 \
   --save_total_limit 1 \
   --learning_rate 4e-5 \
   --weight_decay 0.01 \
